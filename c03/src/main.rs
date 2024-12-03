@@ -17,6 +17,8 @@ fn main() {
     let mut left: Vec<char> = vec![];
     let mut right: Vec<char> = vec![];
     let mut progress = 0;
+    let mut enabled = true;
+    let mut enabled_progress = 0;
     for row in rows {
         for c in row.chars() {
             match progress {
@@ -49,7 +51,9 @@ fn main() {
                     right.clear();
                     let l: i32 = l.parse().expect("Parse failed");
                     let r: i32 = r.parse().expect("Parse failed");
-                    total += l * r;
+                    if enabled {
+                        total += l * r;
+                    }
                 } else if c == 'm' {
                     progress = 1;
                     left.clear();
@@ -58,9 +62,40 @@ fn main() {
                     progress = 0;
                     left.clear();
                     right.clear();
-                }
+                },
                 _ => {},
             };
+
+            if !enabled {
+                match enabled_progress {
+                    0 => if c == 'd' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    1 => if c == 'o' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    2 => if c == '(' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    3 => if c == ')' { 
+                        enabled = true;
+                        enabled_progress = 0;
+                    } else { 
+                        enabled_progress = 0
+                    },
+                    _ => {},
+                }
+            } else {
+                match enabled_progress {
+                    0 => if c == 'd' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    1 => if c == 'o' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    2 => if c == 'n' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    3 => if c == '\'' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    4 => if c == 't' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    5 => if c == '(' { enabled_progress += 1 } else { enabled_progress = 0 },
+                    6 => if c == ')' { 
+                        enabled = false;
+                        enabled_progress = 0;
+                    } else { 
+                        enabled_progress = 0
+                    },
+                    _ => {},
+                }
+            }
         }
     }
     println!("Total {}", total);
