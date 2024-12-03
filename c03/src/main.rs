@@ -6,7 +6,7 @@ fn read() -> Vec<String> {
     file.read_to_string(&mut contents).expect("Couldn't read file");
     return contents.split('\n')
         .map(|x| x.to_string())
-        .filter(|x| x.len() > 0)
+        .filter(|x| !x.is_empty())
         .collect();
 }
 
@@ -26,14 +26,14 @@ fn main() {
                 1 => if c == 'u' { progress += 1 } else { progress = 0 },
                 2 => if c == 'l' { progress += 1 } else { progress = 0 },
                 3 => if c == '(' { progress += 1 } else { progress = 0 },
-                4 => if c.is_digit(10) { 
+                4 => if c.is_ascii_digit() { 
                     progress += 1;
                     left.push(c);
                 } else {
                     progress = 0;
                     left.clear();
                 },
-                5 => if c.is_digit(10) {
+                5 => if c.is_ascii_digit() {
                     left.push(c);
                 } else if c == ',' {
                     progress += 1;
@@ -41,7 +41,7 @@ fn main() {
                     progress = 0;
                     left.clear();
                 },
-                6 => if c.is_digit(10) {
+                6 => if c.is_ascii_digit() {
                     right.push(c);
                 } else if c == ')' {
                     progress = 0;
