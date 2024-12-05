@@ -6,7 +6,7 @@ fn read() -> Vec<String> {
     file.read_to_string(&mut contents).expect("Couldn't read file");
     return contents.split('\n')
         .map(|x| x.to_string())
-        .filter(|x| x.len() > 0)
+        .filter(|x| !x.is_empty()) 
         .collect();
 }
 
