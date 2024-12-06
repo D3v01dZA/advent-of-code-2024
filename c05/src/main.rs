@@ -35,20 +35,29 @@ fn main() {
     }
 
     let mut total = 0;
-    for update in updates {
-        let mut indices: HashMap<i32, usize> = HashMap::new();
-        for (index, page) in update.iter().enumerate() {
-            indices.insert(*page, index);
-        }
-        let mut valid = true;
-        for (before, after) in &precendences {
-            if let (Some(before_index), Some(after_index)) =
-                (indices.get(before), indices.get(after))
-            {
-                valid &= before_index < after_index;
+    for mut update in updates {
+        let mut valid = false;
+        let mut sorted = false;
+        while !valid {
+            valid = true;
+            let mut indices: HashMap<i32, usize> = HashMap::new();
+            for (index, page) in update.iter().enumerate() {
+                indices.insert(*page, index);
+            }
+            for (before, after) in &precendences {
+                if let (Some(before_index), Some(after_index)) =
+                    (indices.get(before), indices.get(after))
+                {
+                    if *before_index >= *after_index {
+                        valid = false;
+                        sorted = true;
+                        update.swap(*before_index, *after_index);
+                        break;
+                    }
+                }
             }
         }
-        if valid {
+        if sorted {
             total += update[update.len() / 2];
         }
     }
