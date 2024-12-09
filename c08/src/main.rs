@@ -50,26 +50,22 @@ fn main() {
                     let height_diff = location_one.0 - location_two.0;
                     let width_diff = location_one.1 - location_two.1;
 
-                    let anti_one = (
-                        location_one.0 + height_diff,
-                        location_one.1 + width_diff,
-                    );
-                    let anti_two = (
-                        location_two.0 - height_diff,
-                        location_two.1 - width_diff,
-                    );
-
-                    if is_in_grid(height, width, anti_one)
-                        && anti_locations.insert(anti_one)
-                    {
-                        total += 1;
-                        println!("{signal} is in grid at {anti_one:?}");
+                    let mut anti_one = (location_one.0 + height_diff, location_one.1 + width_diff);
+                    while is_in_grid(height, width, anti_one) {
+                        if anti_locations.insert(anti_one) {
+                            total += 1;
+                            println!("{signal} is in grid at {anti_one:?}");
+                        }
+                        anti_one = (anti_one.0 + height_diff, anti_one.1 + width_diff);
                     }
-                    if is_in_grid(height, width, anti_two)
-                        && anti_locations.insert(anti_two)
-                    {
-                        total += 1;
-                        println!("{signal} is in grid at {anti_two:?}");
+
+                    let mut anti_two = (location_two.0 + height_diff, location_two.1 + width_diff);
+                    while is_in_grid(height, width, anti_two) {
+                        if anti_locations.insert(anti_two) {
+                            total += 1;
+                            println!("{signal} is in grid at {anti_two:?}");
+                        }
+                        anti_two = (anti_two.0 + height_diff, anti_two.1 + width_diff);
                     }
                 }
             }
@@ -78,10 +74,6 @@ fn main() {
     println!("Total {total}");
 }
 
-fn is_in_grid(
-    height: i32,
-    width: i32,
-    location: (i32, i32),
-) -> bool {
+fn is_in_grid(height: i32, width: i32, location: (i32, i32)) -> bool {
     location.0 >= 0 && location.0 < height && location.1 >= 0 && location.1 < width
 }
