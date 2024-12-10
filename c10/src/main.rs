@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fs::File, io::Read};
+use std::{fs::File, io::Read};
 
 fn read() -> Vec<String> {
     let mut file = File::open("input.txt").expect("No file");
@@ -33,14 +33,13 @@ fn main() {
 
     let mut total = 0;
     for (row, column) in trailheads {
-        let locations = trace_trail(0, row, column, &grid);
-        total += locations.len();
+        total += trace_trail(0, row, column, &grid);
     }
     println!("Total {total}");
 }
 
-fn trace_trail(level: i32, row: i32, column: i32, grid: &Vec<Vec<i32>>) -> HashSet<(i32, i32)> {
-    let mut locations: HashSet<(i32, i32)> = HashSet::new();
+fn trace_trail(level: i32, row: i32, column: i32, grid: &Vec<Vec<i32>>) -> i32 {
+    let mut total = 0;
     for (row_mod, column_mod) in [(0, 1), (1, 0), (0, -1), (-1, 0)] {
         let row = row + row_mod;
         let column = column + column_mod;
@@ -50,15 +49,13 @@ fn trace_trail(level: i32, row: i32, column: i32, grid: &Vec<Vec<i32>>) -> HashS
                 let next_level = grid_row.get(column as usize).expect("Column out of bounds");
                 if *next_level == level + 1 {
                     if *next_level == 9 {
-                        locations.insert((row, column));
+                        total += 1;
                     } else {
-                        for location in trace_trail(level + 1, row, column, grid) {
-                            locations.insert(location);
-                        }
+                        total += trace_trail(level + 1, row, column, grid);
                     }
                 }
             }
         }
     }
-    locations
+    total
 }
