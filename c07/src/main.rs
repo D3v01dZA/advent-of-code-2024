@@ -11,8 +11,8 @@ fn read() -> Vec<String> {
 }
 
 struct Input {
-    result: i64,
-    values: Vec<i64>,
+    result: i128,
+    values: Vec<i128>,
 }
 
 fn main() {
@@ -25,7 +25,7 @@ fn main() {
             .map(|x| x.to_string())
             .collect();
 
-        let values: Vec<i64> = split[1].split_whitespace()
+        let values: Vec<i128> = split[1].split_whitespace()
             .map(|x| x.parse().expect("Could not parse"))
             .collect();
         
@@ -43,12 +43,13 @@ fn main() {
     println!("Total {total}");
 }
 
-fn calculate(expected: i64, current: i64, mut remaining: Vec<i64>) -> bool {
+fn calculate(expected: i128, current: i128, mut remaining: Vec<i128>) -> bool {
     let next = remaining.remove(0);
     let add_current = current + next;
     let mul_current = current * next;
+    let con_current: i128 = format!("{}{}", current, next).parse().expect("Couldn't parse concatenated");
     if remaining.is_empty() {
-        return add_current == expected || mul_current == expected;
+        return add_current == expected || mul_current == expected || con_current == expected;
     }
-    calculate(expected, add_current, remaining.clone()) || calculate(expected, mul_current, remaining.clone())
+    calculate(expected, add_current, remaining.clone()) || calculate(expected, mul_current, remaining.clone()) || calculate(expected, con_current, remaining.clone())
 }
