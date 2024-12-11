@@ -12,32 +12,45 @@ fn read() -> Vec<String> {
         .collect();
 }
 
+const ITERATIONS: u32 = 25;
+
 fn main() {
     let rows = read();
 
-    let mut rocks: Vec<i64> = rows[0]
+    let rocks: Vec<i64> = rows[0]
         .split_whitespace()
         .map(|x| x.parse().expect("Parse failed"))
         .collect();
 
-    for _ in 0..25 {
-        let mut new_rocks = vec![];
-        for rock in rocks {
-            if rock == 0 {
-                new_rocks.push(1);
-                continue;
-            } 
-            let rock_s = format!("{rock}");
-            if rock_s.len() > 1 && rock_s.len() % 2 == 0 {
-                let (left, right) = rock_s.split_at(rock_s.len() / 2);
-                new_rocks.push(left.parse().expect("Couldn't parse left"));
-                new_rocks.push(right.parse().expect("Couldn't parse right"));
-                continue;
-            }
-            new_rocks.push(rock * 2024);
-        }
-        rocks = new_rocks;
+    let mut total = 0;
+    for rock in rocks {
+        total += calculate_rock_count(1, rock);
     }
 
-    println!("Total {}", rocks.len());
+    println!("Total {}", total);
+}
+
+fn calculate_rock_count(iteration: u32, rock: i64) -> i64 {
+    if iteration > ITERATIONS {
+        return 1;
+    }
+    if rock == 0 {
+        return calculate_rock_count(iteration + 1, 1);
+    }
+    let digits = digit_count(rock);
+    if digits % 2 == 0 {
+        let mid = mid(digits);
+        let left = calculate_rock_count(iteration + 1, rock / mid);
+        let right = calculate_rock_count(iteration + 1, rock % mid);
+        return left + right;
+    }
+    calculate_rock_count(iteration + 1, rock * 2024)
+}
+
+fn digit_count(number: i64) -> u32 {
+    1 + number.ilog10()
+}
+
+fn mid(digits: u32) -> i64 {
+    10_i64.pow(digits / 2)
 }
