@@ -35,10 +35,10 @@ fn main() {
 
     let width = 101;
     let height = 103;
-    let seconds = 100;
+    let seconds = 10000;
 
-    for robot in &mut robots {
-        for _ in 0..seconds {
+    for i in 0..seconds {
+        for robot in &mut robots {
             let x_added = robot.location.0 + robot.velocity.0;
             let x = if width <= x_added {
                 (width - x_added).abs()
@@ -57,46 +57,46 @@ fn main() {
             };
             robot.location = (x, y);
         }
-    }
 
-
-    let mut map: HashMap<(i32, i32), i32> = HashMap::new();
-    for robot in robots {
-        if let Some(current) = map.get(&robot.location) {
-            map.insert(robot.location, current + 1);
-        } else {
-            map.insert(robot.location, 1);
-        }
-    }
-
-    let mut tl = 0;
-    let mut tr = 0;
-    let mut bl = 0;
-    let mut br = 0;
-
-    for y in 0..height {
-        for x in 0..width {
-            let y_mid = height / 2;
-            let x_mid = width / 2;
-            if y_mid != y && x_mid != x {
-                if let Some(current) = map.get(&(x, y)) {
-                    print!("{current}");
-                    match (y < y_mid, x < x_mid) {
-                        (true, true) => tl += *current,
-                        (true, false) => tr += *current,
-                        (false, true) => bl += *current,
-                        (false, false) => br += *current,
-                    }
-                } else {
-                    print!(".");
-                }
+        let mut map: HashMap<(i32, i32), i32> = HashMap::new();
+        for robot in robots.clone() {
+            if let Some(current) = map.get(&robot.location) {
+                map.insert(robot.location, current + 1);
             } else {
-                print!(" ");
+                map.insert(robot.location, 1);
             }
         }
-        println!();
+
+        let mut tl = 0;
+        let mut tr = 0;
+        let mut bl = 0;
+        let mut br = 0;
+
+        println!("Second {i}");
+        for y in 0..height {
+            for x in 0..width {
+                let y_mid = height / 2;
+                let x_mid = width / 2;
+                if y_mid != y && x_mid != x {
+                    if let Some(current) = map.get(&(x, y)) {
+                        print!("#"); // Dump output to a file and search for a bunch of joined #'s
+                        match (y < y_mid, x < x_mid) {
+                            (true, true) => tl += *current,
+                            (true, false) => tr += *current,
+                            (false, true) => bl += *current,
+                            (false, false) => br += *current,
+                        }
+                    } else {
+                        print!(".");
+                    }
+                } else {
+                    print!(" ");
+                }
+            }
+            println!();
+        }
+
+        let total = tl * tr * bl * br;
+        println!("Total {total} ({tl} {tr} {bl} {br})");
     }
-    
-    let total = tl * tr * bl * br;
-    println!("Total {total} ({tl} {tr} {bl} {br})");
 }
